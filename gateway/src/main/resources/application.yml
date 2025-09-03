@@ -10,11 +10,24 @@ spring:
       resourceserver:
         jwt:
           issuer-uri: http://localhost:8081/realms/rentals
+
   cloud:
     gateway:
+      default-filters:
+        - DedupeResponseHeader=Access-Control-Allow-Credentials Access-Control-Allow-Origin
+      globalcors:
+        corsConfigurations:
+          "[/**]":
+            allowedOrigins: "*"
+            allowedMethods: "*"
+            allowedHeaders: "*"
       routes:
-        - id: hello_route
-          uri: http://localhost:8080
+        # Se seus controllers nos serviços estão mapeados com /api/users e /api/listings:
+        - id: users
+          uri: http://localhost:8082
           predicates:
-            - Path=/hello
-
+            - Path=/api/users/**
+        - id: listings
+          uri: http://localhost:8083
+          predicates:
+            - Path=/api/listings/**
